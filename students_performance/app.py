@@ -1,9 +1,19 @@
 import streamlit as st
 import pandas as pd
 import joblib
+import requests
+from io import BytesIO
 
-# Load model
-model = joblib.load('model/random_forest_model.joblib')
+# Download the model file
+model_url = 'https://github.com/IzraelAA/submission_dicoding_data_scientist/raw/main/students_performance/model/random_forest_model.joblib'
+response = requests.get(model_url)
+
+if response.status_code == 200:
+    # Load the model from the response content
+    model = joblib.load(BytesIO(response.content))
+else:
+    st.error("Model tidak dapat diunduh. Cek URL dan coba lagi.")
+    st.stop()
 
 # Pastikan model adalah RandomForestClassifier atau classifier lainnya
 assert hasattr(model, 'predict'), "Model yang dimuat tidak memiliki method 'predict'"
